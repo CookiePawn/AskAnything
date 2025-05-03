@@ -88,7 +88,7 @@ android {
 
     namespace "com.templatecli"
     defaultConfig {
-        applicationId "com.askanything"
+        applicationId "com.askanything.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -96,7 +96,7 @@ android {
 
         /* env - DEV 모드일 경우 Config가 적용 되지 않는 문제는 아래 추가로 패키지 명시 해줘야 해결 됨 */
         setProperty("archivesBaseName", "AskAnything-v${versionName}-c${versionCode}")
-        resValue "string", "build_config_package", "com.askanything"
+        resValue "string", "build_config_package", "com.askanything.app"
     }
     signingConfigs {
         debug {
@@ -129,7 +129,7 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }

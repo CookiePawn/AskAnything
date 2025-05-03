@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   cameraButton: {
-    backgroundColor: '#3B3B3B',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     padding: 10,
     borderRadius: 100,
     alignItems: 'center',

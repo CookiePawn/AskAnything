@@ -102,8 +102,8 @@ const styles = StyleSheet.create({
   backButton: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
     paddingHorizontal: 32,
-    paddingVertical: 16,
-    borderRadius: 8,
+    paddingVertical: 12,
+    borderRadius: 100,
     width: '100%',
     alignItems: 'center',
   },
