@@ -78,6 +78,16 @@ const Home = () => {
     }
   };
 
+  const handleTermsPress = () => {
+    // TODO: Navigate to terms and conditions screen
+    console.log('Terms and conditions pressed');
+  };
+
+  const handlePolicyPress = () => {
+    // TODO: Navigate to camera permission policy screen
+    console.log('Camera permission policy pressed');
+  };
+
   return (
     <LinearGradient
       colors={['#9A4DD0', '#280061', '#020105']}
@@ -103,6 +113,14 @@ const Home = () => {
           <Text style={styles.cameraButtonText}>Take a Photo</Text>
         </TouchableOpacity>
       </Animated.View>
+      <View style={styles.footer}>
+        <TouchableOpacity onPress={handleTermsPress}>
+          <Text style={styles.footerText}>Terms and Conditions</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handlePolicyPress}>
+          <Text style={styles.footerText}>Privacy Policy</Text>
+        </TouchableOpacity>
+      </View>
     </LinearGradient>
   );
 };
@@ -151,6 +169,21 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    gap: 10,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  footerText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    textDecorationLine: 'underline',
   },
 });
 
