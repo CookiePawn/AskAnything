@@ -1,17 +1,26 @@
 import { CameraIcon } from '@/assets';
 import React, { useEffect, useState } from 'react';
-import { View, Text, Platform, Linking, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Platform, Linking, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import LinearGradient from 'react-native-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/types';
+
+type PermissionScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Permission'>;
 
 const Permission = () => {
+  const navigation = useNavigation<PermissionScreenNavigationProp>();
+
   const [permissionStatus, setPermissionStatus] = useState<'checking' | 'granted' | 'denied' | 'blocked'>('checking');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     checkPermissions();
   }, []);
 
   const checkPermissions = async () => {
+    setIsLoading(true);
     const cameraPermission = Platform.select({
       ios: PERMISSIONS.IOS.CAMERA,
       android: PERMISSIONS.ANDROID.CAMERA,
@@ -31,9 +40,12 @@ const Permission = () => {
 
     if (cameraResult === RESULTS.GRANTED) {
       setPermissionStatus('granted');
+      navigation.navigate('Home');
     } else if (cameraResult === RESULTS.BLOCKED) {
+      setIsLoading(false);
       setPermissionStatus('blocked');
     } else {
+      setIsLoading(false);
       setPermissionStatus('denied');
     }
   };
@@ -74,6 +86,18 @@ const Permission = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <LinearGradient
+        colors={['#9A4DD0', '#280061', '#020105']}
+        style={styles.container}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+      >
+      </LinearGradient>
+    );
+  }
+
   return (
     <LinearGradient
       colors={['#9A4DD0', '#280061', '#020105']}
@@ -90,13 +114,13 @@ const Permission = () => {
         </Text>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.button}
           onPress={handleRequestPermission}
         >
           <Text style={styles.buttonText}>Allow Permission</Text>
         </TouchableOpacity>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.settingsButton}
           onPress={handleOpenSettings}
         >
