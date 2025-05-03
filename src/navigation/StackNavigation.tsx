@@ -1,8 +1,8 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import { Home, Permission, Terms, Privacy } from '@/screens';
 import { useLayoutEffect, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { RESULTS, PERMISSIONS, check } from 'react-native-permissions';
+import { Home, Permission, Terms, Privacy, Ads } from '@/screens';
 
 const Stack = createStackNavigator();
 
@@ -53,6 +53,7 @@ export default function StackNavigation() {
             <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="Terms" component={Terms} />
             <Stack.Screen name="Privacy" component={Privacy} />
+            <Stack.Screen name="Ads" component={Ads} />
         </Stack.Navigator>
     );
 }

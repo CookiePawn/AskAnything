@@ -5,6 +5,9 @@ export type RootStackParamList = {
   Permission: undefined;
   Terms: undefined;
   Privacy: undefined;
+  Ads: {
+    imageUrl: string;
+  };
 };
 
 declare global {
