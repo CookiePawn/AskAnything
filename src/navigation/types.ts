@@ -8,6 +8,9 @@ export type RootStackParamList = {
   Ads: {
     imageUrl: string;
   };
+  Result: {
+    imageUrl: string;
+  };
 };
 
 declare global {

@@ -3,3 +3,4 @@ export * from './Permission';
 export * from './Terms';
 export * from './Privacy';
 export * from './Ads';
+export * from './Result';

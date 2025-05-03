@@ -1,10 +1,17 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { RootStackParamList } from '@/navigation/types';
 
 const { width, height } = Dimensions.get('window');
 
+type AdsScreenRouteProp = RouteProp<RootStackParamList, 'Ads'>;
+
 const Ads = () => {
+  const route = useRoute<AdsScreenRouteProp>();
+  const { imageUrl } = route.params;
+
   return (
     <View style={styles.container}>
       <Svg height={height} width={width} style={StyleSheet.absoluteFill}>
