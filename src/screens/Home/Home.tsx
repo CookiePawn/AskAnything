@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, Alert, BackHandler, ToastAndroid } from 'react-native';
 import { LinearGradient } from 'react-native-linear-gradient';
 import { launchCamera, launchImageLibrary, ImagePickerResponse } from 'react-native-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
+import RNExitApp from 'react-native-exit-app';
 import Animated, { 
   useSharedValue, 
   withTiming, 
@@ -18,12 +19,31 @@ type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'H
 const Home = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const translateY = useSharedValue(100);
+  const backPressedTime = useRef(0);
 
   useEffect(() => {
     translateY.value = withSpring(0, {
       damping: 15,
       stiffness: 100,
     });
+
+    const backAction = () => {
+      const currentTime = new Date().getTime();
+      const timeDiff = currentTime - backPressedTime.current;
+      
+      if (timeDiff < 2000) { // 2초 이내에 두 번 누른 경우
+        RNExitApp.exitApp();
+        return true;
+      }
+      
+      backPressedTime.current = currentTime;
+      ToastAndroid.show('Press back again to exit', ToastAndroid.SHORT);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => {

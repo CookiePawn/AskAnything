@@ -27,6 +27,7 @@
     "react-native": "0.77.0",
     "react-native-config": "^1.5.5",
     "react-native-dotenv": "^3.4.11",
+    "react-native-exit-app": "^2.0.0",
     "react-native-gesture-handler": "^2.25.0",
     "react-native-image-picker": "^8.2.0",
     "react-native-linear-gradient": "^2.8.3",
