@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 
 const { width, height } = Dimensions.get('window');
@@ -11,6 +11,7 @@ type AdsScreenRouteProp = RouteProp<RootStackParamList, 'Ads'>;
 const Ads = () => {
   const route = useRoute<AdsScreenRouteProp>();
   const { imageUrl } = route.params;
+  const navigation = useNavigation();
 
   return (
     <View style={styles.container}>
@@ -36,7 +37,12 @@ const Ads = () => {
         <Text style={styles.desc}>
           Complete watching the ad to see your{'\n'}analysis results
         </Text>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity 
+            style={styles.button}
+            onPress={() => {
+                navigation.navigate('Result', { imageUrl });
+            }}
+        >
           <Text style={styles.buttonText}>Watch Ad</Text>
         </TouchableOpacity>
       </View>
