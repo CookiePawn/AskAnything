@@ -2,6 +2,7 @@ import { CameraIcon } from '@/assets';
 import React, { useEffect, useState } from 'react';
 import { View, Text, Platform, Linking, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import LinearGradient from 'react-native-linear-gradient';
 
 const Permission = () => {
   const [permissionStatus, setPermissionStatus] = useState<'checking' | 'granted' | 'denied' | 'blocked'>('checking');
@@ -18,8 +19,8 @@ const Permission = () => {
 
     const galleryPermission = Platform.select({
       ios: PERMISSIONS.IOS.PHOTO_LIBRARY,
-      android: Number(Platform.Version) >= 33 
-        ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES 
+      android: Number(Platform.Version) >= 33
+        ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES
         : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
     });
 
@@ -45,8 +46,8 @@ const Permission = () => {
 
     const galleryPermission = Platform.select({
       ios: PERMISSIONS.IOS.PHOTO_LIBRARY,
-      android: Number(Platform.Version) >= 33 
-        ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES 
+      android: Number(Platform.Version) >= 33
+        ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES
         : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
     });
 
@@ -74,45 +75,54 @@ const Permission = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={['#9A4DD0', '#280061', '#020105']}
+      style={styles.container}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+    >
       <View style={styles.content}>
-        {/* <CameraIcon width={100} height={100} /> */}
-        <Text style={styles.title}>권한이 필요합니다</Text>
+        <CameraIcon width={100} height={100} color="#FFFFFF" />
+        <Text style={styles.title}>Permission Required</Text>
         <Text style={styles.description}>
-          카메라와 갤러리 접근 권한이 필요합니다.{'\n'}
-          사진 촬영과 선택을 위해 권한을 허용해주세요.
+          Camera and gallery access is required.{'\n'}
+          Please allow permissions to take and select photos.
         </Text>
-        {permissionStatus === 'denied' && (
-          <TouchableOpacity 
-            style={styles.button}
-            onPress={handleRequestPermission}
-          >
-            <Text style={styles.buttonText}>권한 허용하기</Text>
-          </TouchableOpacity>
-        )}
-        {(permissionStatus === 'blocked' || permissionStatus === 'denied') && (
-          <TouchableOpacity 
-            style={styles.settingsButton}
-            onPress={handleOpenSettings}
-          >
-            <Text style={styles.settingsButtonText}>설정에서 변경하기</Text>
-          </TouchableOpacity>
-        )}
       </View>
-    </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity 
+          style={styles.button}
+          onPress={handleRequestPermission}
+        >
+          <Text style={styles.buttonText}>Allow Permission</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.settingsButton}
+          onPress={handleOpenSettings}
+        >
+          <Text style={styles.settingsButtonText}>Change in Settings</Text>
+        </TouchableOpacity>
+      </View>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
   },
   content: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 24,
+  },
+  buttonContainer: {
+    paddingHorizontal: 24,
+    paddingBottom: 24,
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
   },
   image: {
     width: 200,
@@ -122,19 +132,20 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#000000',
+    color: '#FFFFFF',
+    marginTop: 20,
     marginBottom: 16,
     textAlign: 'center',
   },
   description: {
     fontSize: 16,
-    color: '#666666',
+    color: '#FFFFFF',
     textAlign: 'center',
     marginBottom: 32,
     lineHeight: 24,
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#FFFFFF',
     paddingHorizontal: 32,
     paddingVertical: 16,
     borderRadius: 8,
@@ -143,7 +154,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: '#9A4DD0',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -153,9 +164,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     width: '100%',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#FFFFFF',
   },
   settingsButtonText: {
-    color: '#007AFF',
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
   },
