@@ -1,12 +1,18 @@
+import { GEMINI_API_KEY } from '@env';
+
 export async function fetchGeminiAnalysis(base64Image: string) {
-  const apiKey = 'AIzaSyDOlY7XH7xX2hflxbdNMYV8gySR8TO0qEU'; // 실제 키로 교체
+  const apiKey = GEMINI_API_KEY;
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
   const body = {
     contents: [
       {
         parts: [
-          { text: 'Describe this image and list its key features.' },
+          {
+            text:
+              `Please analyze this image and respond ONLY in the following strict JSON format (do not include markdown or any extra text):\n` +
+              `{"description": "A concise description of the image.", "keyFeatures": ["Feature 1", "Feature 2", ...]}`
+          },
           { inline_data: { mime_type: 'image/jpeg', data: base64Image } },
         ],
       },
@@ -19,19 +25,26 @@ export async function fetchGeminiAnalysis(base64Image: string) {
     body: JSON.stringify(body),
   });
 
-  console.log(response);
-
   if (!response.ok) {
     throw new Error('Failed to analyze image');
   }
 
   const data = await response.json();
-  // Gemini 응답 구조에 따라 파싱 (아래는 예시)
   const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-  // 예시: 설명과 주요 기능 분리 (실제 응답에 맞게 파싱 필요)
-  const [description, ...features] = text.split('\n').filter(Boolean);
-  return {
-    description,
-    keyFeatures: features,
-  };
+
+  // Try to parse as JSON first
+  try {
+    const json = JSON.parse(text);
+    return {
+      description: json.description,
+      keyFeatures: json.keyFeatures,
+    };
+  } catch {
+    // fallback: 기존 파싱 방식
+    const [description, ...features] = text.split('\n').filter(Boolean);
+    return {
+      description,
+      keyFeatures: features,
+    };
+  }
 } 

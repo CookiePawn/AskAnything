@@ -38,8 +38,32 @@ const Result = () => {
                 const base64 = await getBase64FromUrl(imageUrl);
                 // 2. Gemini Vision API 호출
                 const result = await fetchGeminiAnalysis(base64);
-                setDescription(result.description);
-                setKeyFeatures(result.keyFeatures);
+
+                // Gemini가 코드블록/이중 JSON으로 응답한 경우 처리
+                let description = result.description;
+                let keyFeatures = result.keyFeatures;
+
+                // description이 코드블록이면 무시
+                if (description && description.startsWith('```')) description = '';
+
+                // keyFeatures의 첫 번째가 JSON 문자열이면 파싱
+                if (
+                    keyFeatures.length > 0 &&
+                    keyFeatures[0].trim().startsWith('{') &&
+                    keyFeatures[0].trim().endsWith('}')
+                ) {
+                    try {
+                        const parsed = JSON.parse(keyFeatures[0]);
+                        description = parsed.description || description;
+                        keyFeatures = parsed.keyFeatures || [];
+                    } catch {}
+                }
+
+                // keyFeatures에 코드블록이 있으면 제거
+                keyFeatures = keyFeatures.filter((f: string) => !f.startsWith('```'));
+
+                setDescription(description);
+                setKeyFeatures(keyFeatures);
             } catch (e) {
                 setError('Failed to analyze image.');
             } finally {
@@ -95,9 +119,34 @@ const Result = () => {
                 <Text style={styles.description}>Description</Text>
                 <Text style={styles.descriptionText}>{description}</Text>
                 <Text style={styles.keyFeatures}>Key Features</Text>
-                {keyFeatures.map((feature, idx) => (
-                    <Text key={idx} style={styles.keyFeaturesText}>- {feature}</Text>
-                ))}
+                {keyFeatures.map((feature, idx) => {
+                    // 1. '* **Key:** Value' 패턴
+                    let match = feature.match(/^\*\s*\*\*(.+?):\*\*\s*(.+)$/);
+                    if (match) {
+                        const [, key, value] = match;
+                        return (
+                            <Text key={idx} style={styles.keyFeaturesText}>
+                                <Text style={{ fontWeight: 'bold' }}>{key}:</Text> {value}
+                            </Text>
+                        );
+                    }
+                    // 2. '**Key:** Value' 패턴
+                    match = feature.match(/^\*\*(.+?):\*\*\s*(.+)$/);
+                    if (match) {
+                        const [, key, value] = match;
+                        return (
+                            <Text key={idx} style={styles.keyFeaturesText}>
+                                <Text style={{ fontWeight: 'bold' }}>{key}:</Text> {value}
+                            </Text>
+                        );
+                    }
+                    // fallback: 그냥 출력
+                    return (
+                        <Text key={idx} style={styles.keyFeaturesText}>
+                            - {feature}
+                        </Text>
+                    );
+                })}
                 <TouchableOpacity
                     style={styles.button}
                     onPress={() => navigation.navigate('Home')}
