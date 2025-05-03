@@ -44,10 +44,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   content: {
-    position: 'absolute',
     width: '100%',
     alignItems: 'center',
-    bottom: 120,
   },
   title: {
     color: '#fff',
@@ -64,10 +62,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   button: {
+    width: '60%',
     backgroundColor: '#fff',
     borderRadius: 30,
-    paddingHorizontal: 40,
-    paddingVertical: 14,
+    paddingVertical: 12,
     alignItems: 'center',
   },
   buttonText: {
