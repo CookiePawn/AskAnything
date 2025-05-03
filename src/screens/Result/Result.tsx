@@ -1,100 +1,159 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import LinearGradient from 'react-native-linear-gradient';
+import { fetchGeminiAnalysis } from '@/services/gemini';
+import RNFetchBlob from 'rn-fetch-blob';
 
 type ResultScreenRouteProp = RouteProp<RootStackParamList, 'Result'>;
 
+async function getBase64FromUrl(url: string): Promise<string> {
+    if (url.startsWith('file://')) {
+        // 로컬 파일일 경우
+        const base64 = await RNFetchBlob.fs.readFile(url.replace('file://', ''), 'base64');
+        return base64;
+    } else {
+        // 원격 URL일 경우
+        const res = await RNFetchBlob.fetch('GET', url);
+        return res.base64();
+    }
+}
+
 const Result = () => {
-  const route = useRoute<ResultScreenRouteProp>();
-  const { imageUrl } = route.params;
-  const navigation = useNavigation();
-  
-  return (
-    <LinearGradient
-      colors={['#9A4DD0', '#280061', '#020105']}
-      style={styles.container}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-    >
-        <ScrollView
-            showsVerticalScrollIndicator={false}
-        >
-            <Image source={{ uri: imageUrl }} style={styles.image} />
-            <Text style={styles.description}>Description</Text>
-            <Text style={styles.descriptionText}>The iPhone 14 Pro represents the pinnacle of mobile technology, offering a stunning display, powerful performance, and advanced camera features. It's a must-have for tech enthusiasts and iPhone users alike.</Text>
-            
-            <Text style={styles.keyFeatures}>Key Features</Text>
-            <Text style={styles.keyFeaturesText}>- 6.1-inch Super Retina XDR display</Text>
-            <Text style={styles.keyFeaturesText}>- Ceramic shield front cover</Text>
-            <Text style={styles.keyFeaturesText}>- A16 Bionic chip</Text>
-            <Text style={styles.keyFeaturesText}>- 48MP main camera</Text>
-            <Text style={styles.keyFeaturesText}>- 12MP ultrawide camera</Text>
-            <Text style={styles.keyFeaturesText}>- 12MP telephoto camera</Text>
-            <Text style={styles.keyFeaturesText}>- 12MP telephoto camera</Text>
-            <Text style={styles.keyFeaturesText}>- 12MP telephoto camera</Text>
-            <Text style={styles.keyFeaturesText}>- 12MP telephoto camera</Text>
-            <Text style={styles.keyFeaturesText}>- 12MP telephoto camera</Text>
-            <Text style={styles.keyFeaturesText}>- 12MP telephoto camera</Text>
-            <Text style={styles.keyFeaturesText}>- 12MP telephoto camera</Text>
-            
-            <TouchableOpacity 
-                style={styles.button}
-                onPress={() => navigation.navigate('Home')}
+    const route = useRoute<ResultScreenRouteProp>();
+    const { imageUrl } = route.params;
+    const navigation = useNavigation();
+
+    const [loading, setLoading] = useState(true);
+    const [description, setDescription] = useState('');
+    const [keyFeatures, setKeyFeatures] = useState<string[]>([]);
+    const [error, setError] = useState('');
+
+    useEffect(() => {
+        const analyzeImage = async () => {
+            try {
+                setLoading(true);
+                // 1. 이미지 url을 base64로 변환
+                const base64 = await getBase64FromUrl(imageUrl);
+                // 2. Gemini Vision API 호출
+                const result = await fetchGeminiAnalysis(base64);
+                setDescription(result.description);
+                setKeyFeatures(result.keyFeatures);
+            } catch (e) {
+                setError('Failed to analyze image.');
+            } finally {
+                setLoading(false);
+            }
+        };
+        analyzeImage();
+    }, [imageUrl]);
+
+    if (loading) {
+        return (
+            <LinearGradient
+                colors={['#9A4DD0', '#280061', '#020105']}
+                style={styles.container}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
             >
-                <Text style={styles.buttonText}>Home</Text>
-            </TouchableOpacity>
-        </ScrollView>
-    </LinearGradient>
-  );
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator size="large" color="#fff" />
+                    <Text style={{ color: '#fff', marginTop: 20 }}>Analyzing image...</Text>
+                </View>
+            </LinearGradient>
+        );
+    }
+
+    if (error) {
+        return (
+            <LinearGradient
+                colors={['#9A4DD0', '#280061', '#020105']}
+                style={styles.container}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
+            >
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ color: '#fff' }}>{error}</Text>
+                    <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
+                        <Text style={styles.buttonText}>Back</Text>
+                    </TouchableOpacity>
+                </View>
+            </LinearGradient>
+        );
+    }
+
+    return (
+        <LinearGradient
+            colors={['#9A4DD0', '#280061', '#020105']}
+            style={styles.container}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+        >
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <Image source={{ uri: imageUrl }} style={styles.image} />
+                <Text style={styles.description}>Description</Text>
+                <Text style={styles.descriptionText}>{description}</Text>
+                <Text style={styles.keyFeatures}>Key Features</Text>
+                {keyFeatures.map((feature, idx) => (
+                    <Text key={idx} style={styles.keyFeaturesText}>- {feature}</Text>
+                ))}
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => navigation.navigate('Home')}
+                >
+                    <Text style={styles.buttonText}>Home</Text>
+                </TouchableOpacity>
+            </ScrollView>
+        </LinearGradient>
+    );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    padding: 20,
-  },
-  image: {
-    width: '100%',
-    height: 300,
-    borderRadius: 20,
-  },
-  description: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginBottom: 15,
-  },
-  descriptionText: {
-    fontSize: 14,
-    color: '#ffffff',
-  },
-  keyFeatures: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginTop: 30,
-    marginBottom: 15,
-  },
-  keyFeaturesText: {
-    fontSize: 14,
-    color: '#ffffff',
-    marginBottom: 10,
-  },
-  button: {
-    backgroundColor: '#ffffff',
-    padding: 10,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 30,
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#3B3B3B',
-  },
+    container: {
+        flex: 1,
+        padding: 20,
+    },
+    image: {
+        width: '100%',
+        height: 300,
+        borderRadius: 20,
+    },
+    description: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#ffffff',
+        marginBottom: 15,
+        marginTop: 20,
+    },
+    descriptionText: {
+        fontSize: 14,
+        color: '#ffffff',
+    },
+    keyFeatures: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#ffffff',
+        marginTop: 30,
+        marginBottom: 15,
+    },
+    keyFeaturesText: {
+        fontSize: 14,
+        color: '#ffffff',
+        marginBottom: 10,
+    },
+    button: {
+        backgroundColor: '#ffffff',
+        padding: 10,
+        borderRadius: 10,
+        alignItems: 'center',
+        marginTop: 30,
+    },
+    buttonText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#3B3B3B',
+    },
 });
 
 export default Result;
