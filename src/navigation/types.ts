@@ -1,8 +1,10 @@
 import { NavigatorScreenParams } from '@react-navigation/native';
 
 export type RootStackParamList = {
-  Permission: undefined;
   Home: undefined;
+  Permission: undefined;
+  Terms: undefined;
+  Privacy: undefined;
 };
 
 declare global {

@@ -2,6 +2,9 @@ import React, { useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { LinearGradient } from 'react-native-linear-gradient';
 import { launchCamera, launchImageLibrary, ImagePickerResponse } from 'react-native-image-picker';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/types';
 import Animated, { 
   useSharedValue, 
   withTiming, 
@@ -10,7 +13,10 @@ import Animated, {
   Easing
 } from 'react-native-reanimated';
 
+type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
+
 const Home = () => {
+  const navigation = useNavigation<HomeScreenNavigationProp>();
   const translateY = useSharedValue(100);
 
   useEffect(() => {
@@ -79,13 +85,11 @@ const Home = () => {
   };
 
   const handleTermsPress = () => {
-    // TODO: Navigate to terms and conditions screen
-    console.log('Terms and conditions pressed');
+    navigation.navigate('Terms');
   };
 
   const handlePolicyPress = () => {
-    // TODO: Navigate to camera permission policy screen
-    console.log('Camera permission policy pressed');
+    navigation.navigate('Privacy');
   };
 
   return (
