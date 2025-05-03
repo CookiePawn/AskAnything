@@ -1,6 +1,6 @@
 import { CameraIcon } from '@/assets';
 import React, { useEffect, useState } from 'react';
-import { View, Text, Platform, Linking, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, Platform, Linking, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
@@ -11,12 +11,18 @@ type PermissionScreenNavigationProp = NativeStackNavigationProp<RootStackParamLi
 
 const Permission = () => {
   const navigation = useNavigation<PermissionScreenNavigationProp>();
+  const slideAnim = React.useRef(new Animated.Value(-60)).current;
 
   const [permissionStatus, setPermissionStatus] = useState<'checking' | 'granted' | 'denied' | 'blocked'>('checking');
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     checkPermissions();
+    Animated.timing(slideAnim, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
   }, []);
 
   const checkPermissions = async () => {
@@ -69,6 +75,7 @@ const Permission = () => {
 
     if (cameraResult === RESULTS.GRANTED) {
       setPermissionStatus('granted');
+      navigation.navigate('Home');
     } else if (cameraResult === RESULTS.BLOCKED) {
       setPermissionStatus('blocked');
       handleOpenSettings();
@@ -89,7 +96,7 @@ const Permission = () => {
   if (isLoading) {
     return (
       <LinearGradient
-        colors={['#9A4DD0', '#280061', '#020105']}
+        colors={['#250059', '#250059']}
         style={styles.container}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
@@ -100,19 +107,26 @@ const Permission = () => {
 
   return (
     <LinearGradient
-      colors={['#9A4DD0', '#280061', '#020105']}
+      colors={['#250059', '#250059']}
       style={styles.container}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
     >
-      <View style={styles.content}>
+      <Animated.View 
+        style={[
+          styles.content,
+          {
+            transform: [{ translateY: slideAnim }]
+          }
+        ]}
+      >
         <CameraIcon width={100} height={100} color="#FFFFFF" />
         <Text style={styles.title}>Permission Required</Text>
         <Text style={styles.description}>
           Camera and gallery access is required.{'\n'}
           Please allow permissions to take and select photos.
         </Text>
-      </View>
+      </Animated.View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.button}
@@ -178,7 +192,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    color: '#9A4DD0',
+    color: '#250059',
     fontSize: 16,
     fontWeight: '600',
   },

@@ -1,8 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import { Home, Permission } from '@/screens';
-import LinearGradient from 'react-native-linear-gradient';
 import { useLayoutEffect, useState } from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { RESULTS, PERMISSIONS, check } from 'react-native-permissions';
 
 const Stack = createStackNavigator();
@@ -29,24 +28,17 @@ export default function StackNavigation() {
         if (cameraResult === RESULTS.GRANTED) {
             setPermissionStatus('granted');
         } else if (cameraResult === RESULTS.BLOCKED) {
-            setIsLoading(false);
             setPermissionStatus('blocked');
         } else {
-            setIsLoading(false);
             setPermissionStatus('denied');
         }
+        setIsLoading(false);
     };
 
 
     if (isLoading) {
         return (
-            <LinearGradient
-                colors={['#9A4DD0', '#280061', '#020105']}
-                style={styles.container}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 0, y: 1 }}
-            >
-            </LinearGradient>
+            <View style={styles.container} />
         );
     }
 
@@ -66,5 +58,6 @@ export default function StackNavigation() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#250059',
     },
 });
