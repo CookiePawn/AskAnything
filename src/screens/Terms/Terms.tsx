@@ -1,8 +1,15 @@
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'react-native-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/types';
+
+type TermsScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Terms'>;
 
 const Terms = () => {
+  const navigation = useNavigation<TermsScreenNavigationProp>();
+
   return (
     <LinearGradient
       colors={['#9A4DD0', '#280061', '#020105']}
@@ -39,6 +46,14 @@ const Terms = () => {
           </Text>
         </View>
       </ScrollView>
+      <View style={styles.footer}>
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={styles.backButtonText}>Back</Text>
+        </TouchableOpacity>
+      </View>
     </LinearGradient>
   );
 };
@@ -71,6 +86,23 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#FFFFFF',
     lineHeight: 20,
+  },
+  footer: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  backButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    paddingHorizontal: 32,
+    paddingVertical: 16,
+    borderRadius: 8,
+    width: '100%',
+    alignItems: 'center',
+  },
+  backButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
 
