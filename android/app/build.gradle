@@ -105,6 +105,12 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file('release.jks')
+            storePassword 'dks135790'
+            keyAlias 'askanything'
+            keyPassword 'dks135790'
+        }
     }
     flavorDimensions "default"
     productFlavors {

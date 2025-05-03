@@ -7,12 +7,11 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 import RNExitApp from 'react-native-exit-app';
 import Animated, { 
-  useSharedValue, 
-  withTiming, 
+  useSharedValue,
   useAnimatedStyle,
   withSpring,
-  Easing
 } from 'react-native-reanimated';
+import { AdBanner } from '@/components';
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
