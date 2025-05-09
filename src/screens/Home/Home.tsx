@@ -76,7 +76,7 @@ const Home = () => {
       if (result.assets && result.assets[0]) {
         const imageUri = result.assets[0].uri;
         // TODO: Handle the selected image
-        navigation.navigate('Ads', { imageUrl : imageUri || '' });
+        navigation.navigate('Result', { imageUrl : imageUri || '' });
         console.log('Selected image:', imageUri);
       }
     } catch (error) {
@@ -103,7 +103,7 @@ const Home = () => {
       if (result.assets && result.assets[0]) {
         const imageUri = result.assets[0].uri;
         // TODO: Handle the captured image
-        navigation.navigate('Ads', { imageUrl: imageUri || '' });
+        navigation.navigate('Result', { imageUrl: imageUri || '' });
         console.log('Captured image:', imageUri);
       }
     } catch (error) {
