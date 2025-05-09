@@ -1,6 +1,6 @@
 {
   "name": "templatecli",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
     "start": "react-native start --port=8083",
