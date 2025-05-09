@@ -43,12 +43,28 @@ const Privacy = () => {
             Your images are processed using generative AI technology to provide analysis and responses. This processing is done in real-time and the images are not retained after the analysis is complete.
           </Text>
 
-          <Text style={styles.sectionTitle}>4. Data Security</Text>
+          <Text style={styles.sectionTitle}>4. Advertising and Google AdMob</Text>
+          <Text style={styles.text}>
+            This app uses Google AdMob for advertising purposes. By using this app, you agree to the following regarding advertising:
+            {'\n\n'}• Google AdMob may collect and process data according to their privacy policy
+            {'\n'}• This includes but is not limited to:
+            {'\n'}  - Device information
+            {'\n'}  - IP address
+            {'\n'}  - Advertising identifiers
+            {'\n'}  - Usage data
+            {'\n\n'}• Google AdMob uses this information to:
+            {'\n'}  - Show relevant advertisements
+            {'\n'}  - Measure ad performance
+            {'\n'}  - Improve ad targeting
+            {'\n\n'}For more information about how Google uses your data, please visit Google's Privacy Policy at https://policies.google.com/privacy
+          </Text>
+
+          <Text style={styles.sectionTitle}>5. Data Security</Text>
           <Text style={styles.text}>
             We implement appropriate security measures to protect your data during transmission and processing. However, no method of transmission over the internet or electronic storage is 100% secure.
           </Text>
 
-          <Text style={styles.sectionTitle}>5. Changes to Privacy Policy</Text>
+          <Text style={styles.sectionTitle}>6. Changes to Privacy Policy</Text>
           <Text style={styles.text}>
             We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.
           </Text>
