@@ -91,7 +91,7 @@ android {
         applicationId "com.askanything.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
+        versionCode 3
         versionName "0.0.2"
 
         /* env - DEV 모드일 경우 Config가 적용 되지 않는 문제는 아래 추가로 패키지 명시 해줘야 해결 됨 */
