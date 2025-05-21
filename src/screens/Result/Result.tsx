@@ -34,6 +34,8 @@ const Result = () => {
     const [description, setDescription] = useState('');
     const [keyFeatures, setKeyFeatures] = useState<string[]>([]);
     const [error, setError] = useState('');
+    const [retryCount, setRetryCount] = useState(0);
+    const MAX_RETRIES = 3;
 
     useEffect(() => {
         Animated.loop(
@@ -50,23 +52,52 @@ const Result = () => {
         outputRange: [-width, width],
     });
 
+    const handleRetry = () => {
+        setRetryCount(prev => prev + 1);
+        setError('');
+        setLoading(true);
+    };
+
+    const showErrorAlert = (errorMessage: string) => {
+        Alert.alert(
+            '분석 오류',
+            errorMessage,
+            [
+                {
+                    text: '다시 시도',
+                    onPress: () => {
+                        if (retryCount < MAX_RETRIES) {
+                            handleRetry();
+                        } else {
+                            navigation.goBack();
+                        }
+                    }
+                },
+                {
+                    text: '돌아가기',
+                    onPress: () => navigation.goBack(),
+                    style: 'cancel'
+                }
+            ]
+        );
+    };
+
     useEffect(() => {
         const analyzeImage = async () => {
             try {
                 setLoading(true);
-                // 1. 이미지 url을 base64로 변환
                 const base64 = await getBase64FromUrl(imageUrl);
-                // 2. Gemini Vision API 호출
                 const result = await fetchGeminiAnalysis(base64);
 
-                // Gemini가 코드블록/이중 JSON으로 응답한 경우 처리
+                if (!result || (!result.description && (!result.keyFeatures || result.keyFeatures.length === 0))) {
+                    throw new Error('이미지 분석 결과를 받지 못했습니다.');
+                }
+
                 let description = result.description;
                 let keyFeatures = result.keyFeatures;
 
-                // description이 코드블록이면 무시
                 if (description && description.startsWith('```')) description = '';
 
-                // keyFeatures의 첫 번째가 JSON 문자열이면 파싱
                 if (
                     keyFeatures.length > 0 &&
                     keyFeatures[0].trim().startsWith('{') &&
@@ -76,22 +107,29 @@ const Result = () => {
                         const parsed = JSON.parse(keyFeatures[0]);
                         description = parsed.description || description;
                         keyFeatures = parsed.keyFeatures || [];
-                    } catch { }
+                    } catch (e) {
+                        console.warn('JSON 파싱 실패:', e);
+                    }
                 }
 
-                // keyFeatures에 코드블록이 있으면 제거
                 keyFeatures = keyFeatures.filter((f: string) => !f.startsWith('```'));
+
+                if (!description && keyFeatures.length === 0) {
+                    throw new Error('유효한 분석 결과를 받지 못했습니다.');
+                }
 
                 setDescription(description);
                 setKeyFeatures(keyFeatures);
             } catch (e) {
-                setError('Failed to analyze image.');
+                const errorMessage = e instanceof Error ? e.message : '이미지 분석 중 오류가 발생했습니다.';
+                setError(errorMessage);
+                showErrorAlert(errorMessage);
             } finally {
                 setLoading(false);
             }
         };
         analyzeImage();
-    }, [imageUrl]);
+    }, [imageUrl, retryCount]);
 
     if (loading) {
         return (
@@ -190,9 +228,18 @@ const Result = () => {
                 end={{ x: 0, y: 1 }}
             >
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <Text style={{ color: '#fff' }}>{error}</Text>
-                    <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
-                        <Text style={styles.buttonText}>Back</Text>
+                    <Text style={{ color: '#fff', marginBottom: 20 }}>{error}</Text>
+                    <TouchableOpacity 
+                        style={[styles.button, { marginBottom: 10 }]} 
+                        onPress={handleRetry}
+                    >
+                        <Text style={styles.buttonText}>다시 시도</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                        style={[styles.button, { backgroundColor: '#666' }]} 
+                        onPress={() => navigation.goBack()}
+                    >
+                        <Text style={[styles.buttonText, { color: '#fff' }]}>돌아가기</Text>
                     </TouchableOpacity>
                 </View>
             </LinearGradient>
