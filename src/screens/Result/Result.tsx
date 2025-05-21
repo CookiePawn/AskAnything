@@ -64,7 +64,7 @@ const Result = () => {
             errorMessage,
             [
                 {
-                    text: '다시 시도',
+                    text: 'Retry',
                     onPress: () => {
                         if (retryCount < MAX_RETRIES) {
                             handleRetry();
@@ -74,7 +74,7 @@ const Result = () => {
                     }
                 },
                 {
-                    text: '돌아가기',
+                    text: 'Go Back',
                     onPress: () => navigation.goBack(),
                     style: 'cancel'
                 }
