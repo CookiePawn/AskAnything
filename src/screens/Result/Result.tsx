@@ -7,6 +7,8 @@ import { fetchGeminiAnalysis } from '@/services/gemini';
 import RNFetchBlob from 'rn-fetch-blob';
 import Svg, { RadialGradient, Defs, Rect, Stop } from 'react-native-svg';
 import { AdBanner } from '@/components';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { StorageKey } from '@/constants';
 
 const { width, height } = Dimensions.get('window');
 
@@ -35,7 +37,32 @@ const Result = () => {
     const [keyFeatures, setKeyFeatures] = useState<string[]>([]);
     const [error, setError] = useState('');
     const [retryCount, setRetryCount] = useState(0);
+    const [isKorean, setIsKorean] = useState(false);
     const MAX_RETRIES = 3;
+
+    useEffect(() => {
+        // 저장된 언어 설정 불러오기
+        const loadLanguage = async () => {
+            try {
+                const savedLanguage = await AsyncStorage.getItem(StorageKey.LANGUAGE_KEY);
+                if (savedLanguage !== null) {
+                    setIsKorean(savedLanguage === 'ko');
+                }
+            } catch (e) {
+                console.warn('언어 설정을 불러오는데 실패했습니다:', e);
+            }
+        };
+        loadLanguage();
+    }, []);
+
+    const handleLanguageChange = async (isKorean: boolean) => {
+        try {
+            await AsyncStorage.setItem(StorageKey.LANGUAGE_KEY, isKorean ? 'ko' : 'en');
+            setIsKorean(isKorean);
+        } catch (e) {
+            console.warn('언어 설정을 저장하는데 실패했습니다:', e);
+        }
+    };
 
     useEffect(() => {
         Animated.loop(
@@ -87,10 +114,10 @@ const Result = () => {
             try {
                 setLoading(true);
                 const base64 = await getBase64FromUrl(imageUrl);
-                const result = await fetchGeminiAnalysis(base64);
+                const result = await fetchGeminiAnalysis(base64, isKorean ? 'ko' : 'en');
 
                 if (!result || (!result.description && (!result.keyFeatures || result.keyFeatures.length === 0))) {
-                    throw new Error('이미지 분석 결과를 받지 못했습니다.');
+                    throw new Error(isKorean ? '이미지 분석 결과를 받지 못했습니다.' : 'Failed to get image analysis results.');
                 }
 
                 let description = result.description;
@@ -121,7 +148,9 @@ const Result = () => {
                 setDescription(description);
                 setKeyFeatures(keyFeatures);
             } catch (e) {
-                const errorMessage = e instanceof Error ? e.message : '이미지 분석 중 오류가 발생했습니다.';
+                const errorMessage = e instanceof Error 
+                    ? e.message 
+                    : (isKorean ? '이미지 분석 중 오류가 발생했습니다.' : 'An error occurred while analyzing the image.');
                 setError(errorMessage);
                 showErrorAlert(errorMessage);
             } finally {
@@ -129,7 +158,7 @@ const Result = () => {
             }
         };
         analyzeImage();
-    }, [imageUrl, retryCount]);
+    }, [imageUrl, retryCount, isKorean]);
 
     if (loading) {
         return (
@@ -254,10 +283,24 @@ const Result = () => {
             end={{ x: 0, y: 1 }}
         >
             <ScrollView showsVerticalScrollIndicator={false}>
+                <View style={styles.languageToggle}>
+                    <TouchableOpacity
+                        style={[styles.langButton, isKorean && styles.activeLangButton]}
+                        onPress={() => handleLanguageChange(true)}
+                    >
+                        <Text style={[styles.langButtonText, isKorean && styles.activeLangButtonText]}>한국어</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.langButton, !isKorean && styles.activeLangButton]}
+                        onPress={() => handleLanguageChange(false)}
+                    >
+                        <Text style={[styles.langButtonText, !isKorean && styles.activeLangButtonText]}>English</Text>
+                    </TouchableOpacity>
+                </View>
                 <Image source={{ uri: imageUrl }} style={styles.image} />
-                <Text style={styles.description}>Description</Text>
+                <Text style={styles.description}>{isKorean ? '설명' : 'Description'}</Text>
                 <Text style={styles.descriptionText}>{description}</Text>
-                <Text style={styles.keyFeatures}>Key Features</Text>
+                <Text style={styles.keyFeatures}>{isKorean ? '주요 특징' : 'Key Features'}</Text>
                 {keyFeatures.map((feature, idx) => {
                     // 1. '* **Key:** Value' 패턴
                     let match = feature.match(/^\*\s*\*\*(.+?):\*\*\s*(.+)$/);
@@ -290,7 +333,7 @@ const Result = () => {
                     style={styles.button}
                     onPress={() => navigation.navigate('Home')}
                 >
-                    <Text style={styles.buttonText}>Home</Text>
+                    <Text style={styles.buttonText}>{isKorean ? '홈으로' : 'Home'}</Text>
                 </TouchableOpacity>
             </ScrollView>
             <AdBanner />
@@ -383,6 +426,29 @@ const styles = StyleSheet.create({
         marginTop: 20,
         marginBottom: 30,
         opacity: 0.8,
+    },
+    languageToggle: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginBottom: 20,
+        gap: 10,
+    },
+    langButton: {
+        paddingHorizontal: 20,
+        paddingVertical: 8,
+        borderRadius: 20,
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    },
+    activeLangButton: {
+        backgroundColor: '#ffffff',
+    },
+    langButtonText: {
+        color: '#ffffff',
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
+    activeLangButtonText: {
+        color: '#3B3B3B',
     },
 });
 
