@@ -6359,10 +6359,20 @@ react-is@^19.1.0:
   resolved "https://registry.npmjs.org/react-is/-/react-is-19.1.0.tgz"
   integrity sha512-Oe56aUPnkHyyDxxkvqtd7KkdQP5uIUfHxd5XTb3wE9d/kRnZLmKbDB0GWk919tdQ+mxxPtG6EAs6RMT6i1qtHg==
 
+react-native-check-version@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/react-native-check-version/-/react-native-check-version-1.4.0.tgz#9650e94c33090c22c1d245f14f75fc40c6b7cfdc"
+  integrity sha512-5Ar/LN0/wFSBEOY9TjtIApTrDu1/i4OYN9u0xW/DG2edlCyyfo/BfQkT15muKrKoDpolaoQfGjkDK8/nx9fT0A==
+
 react-native-config@^1.5.5:
   version "1.5.5"
   resolved "https://registry.npmjs.org/react-native-config/-/react-native-config-1.5.5.tgz"
   integrity sha512-dGdLnBU0cd5xL5bF0ROTmHYbsstZnQKOEPfglvZi1vStvAjpld14X25K6mY3KGPTMWAzx6TbjKeq5dR+ILuMMA==
+
+react-native-device-info@^14.0.4:
+  version "14.0.4"
+  resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-14.0.4.tgz#56b24ace9ff29a66bdfc667209086421ed6cfdce"
+  integrity sha512-NX0wMAknSDBeFnEnSFQ8kkAcQrFHrG4Cl0mVjoD+0++iaKrOupiGpBXqs8xR0SeJyPC5zpdPl4h/SaBGly6UxA==
 
 react-native-dotenv@^3.4.11:
   version "3.4.11"

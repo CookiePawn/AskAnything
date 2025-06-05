@@ -77,7 +77,6 @@ const Home = () => {
         const imageUri = result.assets[0].uri;
         // TODO: Handle the selected image
         navigation.navigate('Result', { imageUrl : imageUri || '' });
-        console.log('Selected image:', imageUri);
       }
     } catch (error) {
       Alert.alert('Error', 'Failed to open gallery');
@@ -104,7 +103,6 @@ const Home = () => {
         const imageUri = result.assets[0].uri;
         // TODO: Handle the captured image
         navigation.navigate('Result', { imageUrl: imageUri || '' });
-        console.log('Captured image:', imageUri);
       }
     } catch (error) {
       Alert.alert('Error', 'Failed to open camera');
