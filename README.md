@@ -9,7 +9,7 @@
 ## USING
 > https://github.com/CookiePawn/template-cli.git
 >
-> Naver Search API
+> Gemini 2.0 Flash API
 
 
 ## Version
