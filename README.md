@@ -1,5 +1,26 @@
 # template-cli
 
+# Project Period
+
+    Main APP DEV. 2025/05/03 ~
+    Google Play Store Production Upload. 2025/06/06
+    
+
+## USING
+> https://github.com/CookiePawn/template-cli.git
+>
+> Naver Search API
+
+
+## Version
+>## v0.0.4-c5
+> [2025-06-06]
+> - 스토어 버전 확인 추가
+> - 로딩 애니메이션 수정
+> - 결과 화면 출력부 수정
+>
+
+
 ## React Native Cli 탬플릿
 > 프로젝트명 변경 가능
 >
