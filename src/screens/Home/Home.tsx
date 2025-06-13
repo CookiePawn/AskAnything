@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Alert, BackHandler, ToastAndroid } from 'react-native';
 import { LinearGradient } from 'react-native-linear-gradient';
 import { launchCamera, launchImageLibrary, ImagePickerResponse } from 'react-native-image-picker';
@@ -6,12 +6,13 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 import RNExitApp from 'react-native-exit-app';
-import Animated, { 
+import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { AdBanner } from '@/components';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { StorageKey } from '@/constants/storage-key';
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -19,12 +20,19 @@ const Home = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const translateY = useSharedValue(100);
   const backPressedTime = useRef(0);
+  const [isKorean, setIsKorean] = useState(false);
 
   useEffect(() => {
     translateY.value = withSpring(0, {
       damping: 15,
       stiffness: 100,
     });
+
+    const getLanguage = async () => {
+      const language = await AsyncStorage.getItem(StorageKey.LANGUAGE_KEY);
+      setIsKorean(language === 'ko');
+    };
+    getLanguage();
   }, []);
 
   useFocusEffect(
@@ -32,12 +40,12 @@ const Home = () => {
       const backAction = () => {
         const currentTime = new Date().getTime();
         const timeDiff = currentTime - backPressedTime.current;
-        
+
         if (timeDiff < 2000) { // 2초 이내에 두 번 누른 경우
           RNExitApp.exitApp();
           return true;
         }
-        
+
         backPressedTime.current = currentTime;
         ToastAndroid.show('Press back again to exit', ToastAndroid.SHORT);
         return true;
@@ -76,7 +84,7 @@ const Home = () => {
       if (result.assets && result.assets[0]) {
         const imageUri = result.assets[0].uri;
         // TODO: Handle the selected image
-        navigation.navigate('Result', { imageUrl : imageUri || '' });
+        navigation.navigate('Result', { imageUrl: imageUri || '' });
       }
     } catch (error) {
       Alert.alert('Error', 'Failed to open gallery');
@@ -117,6 +125,15 @@ const Home = () => {
     navigation.navigate('Privacy');
   };
 
+  const handleLanguageChange = async (isKorean: boolean) => {
+    try {
+      await AsyncStorage.setItem(StorageKey.LANGUAGE_KEY, isKorean ? 'ko' : 'en');
+      setIsKorean(isKorean);
+    } catch (e) {
+      console.warn('언어 설정을 저장하는데 실패했습니다:', e);
+    }
+  };
+
   return (
     <LinearGradient
       colors={['#9A4DD0', '#280061', '#020105']}
@@ -129,18 +146,32 @@ const Home = () => {
         <Text style={styles.description}>
           Discover insights from any image with our advanced AI analysis
         </Text>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.galleryButton}
           onPress={handleGalleryPress}
-        >  
+        >
           <Text style={styles.galleryButtonText}>Choose from Gallery</Text>
         </TouchableOpacity>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.cameraButton}
           onPress={handleCameraPress}
         >
           <Text style={styles.cameraButtonText}>Take a Photo</Text>
         </TouchableOpacity>
+        <View style={styles.languageToggle}>
+          <TouchableOpacity
+            style={[styles.langButton, isKorean && styles.activeLangButton]}
+            onPress={() => handleLanguageChange(true)}
+          >
+            <Text style={[styles.langButtonText, isKorean && styles.activeLangButtonText]}>한국어</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.langButton, !isKorean && styles.activeLangButton]}
+            onPress={() => handleLanguageChange(false)}
+          >
+            <Text style={[styles.langButtonText, !isKorean && styles.activeLangButtonText]}>English</Text>
+          </TouchableOpacity>
+        </View>
       </Animated.View>
       <View style={styles.footer}>
         <TouchableOpacity onPress={handleTermsPress}>
@@ -163,7 +194,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'absolute',
     left: 0,
-    bottom: 120,
+    bottom: 80,
   },
   title: {
     fontSize: 35,
@@ -213,6 +244,31 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 12,
     textDecorationLine: 'underline',
+  },
+
+  languageToggle: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 20,
+    gap: 10,
+    marginTop: 20,
+  },
+  langButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  activeLangButton: {
+    backgroundColor: '#ffffff',
+  },
+  langButtonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  activeLangButtonText: {
+    color: '#3B3B3B',
   },
 });
 
