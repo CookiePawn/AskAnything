@@ -1,7 +1,7 @@
-import { GEMINI_API_KEY } from '@env';
+import Config from 'react-native-config';
 
 export async function fetchGeminiAnalysis(base64Image: string, language: 'ko' | 'en' = 'en') {
-  const apiKey = GEMINI_API_KEY;
+  const apiKey = Config.GEMINI_API_KEY;
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
   const body = {

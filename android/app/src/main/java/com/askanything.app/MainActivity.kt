@@ -1,4 +1,4 @@
-package com.templatecli
+package com.askanything.app
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

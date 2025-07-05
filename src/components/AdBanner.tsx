@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
-import { ADMOB_BANNER_UID } from '@env';
+import Config from 'react-native-config';
 
 const adUnitId = __DEV__ 
   ? TestIds.BANNER 
-  : ADMOB_BANNER_UID;
+  : Config.ADMOB_BANNER_UID;
 
 export const AdBanner = () => {
   return (
